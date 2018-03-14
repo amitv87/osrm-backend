@@ -43,6 +43,7 @@ if(ENABLE_MASON)
   set(MASON_LUA_VERSION "5.2.4")
   set(MASON_BZIP2_VERSION "1.0.6")
   set(MASON_TBB_VERSION "2017_U7")
+  set(MASON_ZLIB_VERSION "1.2.8")
 
   message(STATUS "Enabling mason")
 
@@ -457,6 +458,10 @@ if(ENABLE_MASON)
   add_dependency_includes(${MASON_PACKAGE_tbb_INCLUDE_DIRS})
   set(TBB_LIBRARIES ${MASON_PACKAGE_tbb_STATIC_LIBS})
 
+  mason_use(zlib VERSION ${MASON_ZLIB_VERSION})
+  add_dependency_includes(${MASON_PACKAGE_zlib_INCLUDE_DIRS})
+  set(ZLIB_LIBRARY ${MASON_PACKAGE_zlib_STATIC_LIBS})
+
   # message("MASON_PACKAGE_tbb_LIBRARY_DIRS ${MASON_PACKAGE_tbb_LIBRARY_DIRS}")
   # if(NOT MASON_PACKAGE_tbb_LIBRARY_DIRS)
   #   message(FATAL_ERROR "MASON_PACKAGE_tbb_LIBRARY_DIRS is empty, rpath will not work")
@@ -487,6 +492,8 @@ if(ENABLE_MASON)
   include_directories(SYSTEM ${CMAKE_CURRENT_SOURCE_DIR}/third_party/rapidjson/include)
 
 else()
+  find_package(ZLIB REQUIRED)
+  add_dependency_includes(${ZLIB_INCLUDE_DIRS})
 
   find_package(Boost 1.54 REQUIRED COMPONENTS ${BOOST_COMPONENTS})
   add_dependency_includes(${Boost_INCLUDE_DIRS})
@@ -562,8 +569,6 @@ endif()
 
 # even with mason builds we want to link to system zlib
 # to ensure that osrm binaries play well with other binaries like nodejs
-find_package(ZLIB REQUIRED)
-add_dependency_includes(${ZLIB_INCLUDE_DIRS})
 
 if(NOT WIN32 AND NOT Boost_USE_STATIC_LIBS)
   add_dependency_defines(-DBOOST_TEST_DYN_LINK)
